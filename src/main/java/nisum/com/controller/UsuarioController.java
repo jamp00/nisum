@@ -1,6 +1,7 @@
 package nisum.com.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import nisum.com.dto.UsuarioResponse;
 import nisum.com.dto.UsuarioRequest;
 import nisum.com.implement.UsuarioImplement;
 import nisum.com.model.Usuario;
@@ -30,37 +30,43 @@ public class UsuarioController {
 			path = "/agregarUsuario",
 			produces = "application/json",
 			consumes = "application/json")
-	public UsuarioResponse agregarUsuario(@RequestBody UsuarioRequest usuarioRequest, HttpServletRequest request) throws Exception {
+	public Usuario agregarUsuario(@RequestBody UsuarioRequest usuarioRequest, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		final String jwtToken = request.getHeader("Authorization");
 
-		String stringUsuario;
-		UsuarioResponse response = null;
 		Util util = new Util();
+		Usuario nuevoOsuario;
 
-		if( !util.validaEmail(usuarioRequest.getEmail()) )
-			return response  = new UsuarioResponse( "{ \"mensaje\" : \"Formato eMail invalido\" }", 400 );
+		if( !util.validaEmail(usuarioRequest.getEmail()) ) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Formato eMail invalido");
+			return null;
+		}
 
-		if( !util.validaPassword((usuarioRequest.getPassword() )) )
-			return response  = new UsuarioResponse( "{ \"mensaje\" : \"Formato password invalido\" }", 400 );
+		if( !util.validaPassword((usuarioRequest.getPassword() )) ) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Formato password invalido");
+			return null;
+		}
 
-		if ( usuarioImplement.existByEmail(usuarioRequest.getEmail()) )
-			return response  = new UsuarioResponse( "{ \"mensaje\" : \"eMail ya registrado}", 400 );
+		if ( usuarioImplement.existByEmail(usuarioRequest.getEmail()) ) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "eMail ya registrado");
+			return null;
+		}
 
 		try {
 			Usuario objUsuario = util.mapUsuarioRequestToUsuario(usuarioRequest, jwtToken);
 	
-			Usuario nuevoOsuario = usuarioImplement.Create(objUsuario);
-			System.out.println(nuevoOsuario);
-			stringUsuario = util.usuarioToStringJson( nuevoOsuario );
+			nuevoOsuario = usuarioImplement.Create(objUsuario);
 		}
 		catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-			return response  = new UsuarioResponse( "{ \"mensaje\" : \"ERROR en servidor}", 500 );
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ERROR en servidor");
+			return null;
 		}
-		response = new UsuarioResponse(stringUsuario, 200 );
-		return response;
+
+		response.setStatus(HttpServletResponse.SC_OK);
+		return nuevoOsuario;
+
 
 	}
 

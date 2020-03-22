@@ -6,12 +6,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-
 import nisum.com.dto.PhoneDto;
 import nisum.com.dto.UsuarioRequest;
 import nisum.com.model.Phone;
@@ -43,22 +37,6 @@ public class Util {
         	valido = true;
 
         return valido;
-	}
-
-	public String usuarioToStringJson(Usuario objUsuario) throws JsonProcessingException {
-	// TODO Auto-generated method stub
-		ObjectMapper mapper = new ObjectMapper();
-
-	    mapper.registerModule(new ParameterNamesModule());
-	    mapper.registerModule(new Jdk8Module());
-	    mapper.registerModule(new JavaTimeModule());
-
-		String usuarioString = mapper.writeValueAsString(objUsuario);;
-		
-		Object json = mapper.readValue(usuarioString, Object.class);
-
-		// Java object to JSON string
-		return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
 	}
 
 	public Usuario mapUsuarioRequestToUsuario(UsuarioRequest usuarioDto, String token) {
