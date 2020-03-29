@@ -1,7 +1,6 @@
 package nisum.com.implement;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import nisum.com.model.Usuario;
@@ -11,7 +10,6 @@ import nisum.com.repository.UsuarioRepository;
 public class UsuarioImplement {
 
 	@Autowired
-	@Qualifier("UsuarioRepository")
 	private UsuarioRepository usuarioRepository;
 
 

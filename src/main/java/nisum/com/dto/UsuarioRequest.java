@@ -2,10 +2,17 @@ package nisum.com.dto;
 
 import java.util.List;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Pattern;
+
 public class UsuarioRequest {
 
 	private String name;
+
+	@Email(message = "Formato eMail invalido")
 	private String email;
+
+	@Pattern(regexp="^([A-Z]{1}([a-z])+([0-9]){2})$", message="Formato password invalido")
 	private String password;
 	private List<PhoneDto> phones;
 
